@@ -2,6 +2,7 @@
   <div id="app">
     <!-- <img src="./assets/logo.png"> -->
     <router-view/>
+    <h1>BookApp</h1>
     <div class="panel-body">
       <form class="form-inline" v-on:submit.prevent="addBook">
         <div class="form-group">
@@ -36,15 +37,20 @@
           <tr v-for="book in books">
             <td><a v-bind:href="book.url">{{ book.title }}</a></td>
             <td>{{ book.author }}</td>
+            <td>
+              <span class="glyphicon glyphicon-trash" aria-hidden="true" v-on:click="removeBook(book)"></span>
+            </td>
           </tr>
         </tbody>
       </table>
     </div>
+    <a href="https://medium.com/codingthesmartway-com-blog/vue-js-2-firebase-e4b2479e35a8">Tutorial from Coding Smart</a>
   </div>
 </template>
 
 <script>
 import Firebase from "firebase";
+import Toastr from "toastr";
 
 // Initialize Firebase
 var config = {
@@ -76,11 +82,18 @@ export default {
     };
   },
   methods: {
+    // Push a new object passing the three parameters
     addBook: function() {
       booksRef.push(this.newBook);
       this.newBook.title = "";
       this.newBook.author = "";
       this.newBook.url = "http://";
+    },
+    // To remove the added book, we select the book node by using the child method
+    // then remove the object from the database using the key
+    removeBook: function(book) {
+      booksRef.child(book['.key']).remove()
+      Toastr.success('Book removed successfully!')
     }
   }
 };
